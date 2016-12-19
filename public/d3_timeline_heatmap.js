@@ -39,10 +39,16 @@ function heatmap () {
       var colors = ['#fee0b6', '#fdb863', '#e08214', '#b35806', '#7f3b08']; // orange
       //var colors = ["#5e4fa2", "#3288bd", "#66c2a5", "#abdda4", "#e6f598", "#fee08b", "#fdae61", "#f46d43", "#d53e4f", "#9e0142"]; // spectral
       var countMax = 0;
+      var data = [];
       sources.forEach(function(source) {
         source.data.forEach(function(d) {
           countMax = Math.max(countMax, d.count);
+          d.name = source.name;
+          data.push(d);
         });
+      });
+      data.sort(function(a, b) {
+        return d3.ascending(a.count, b.count);
       });
       var colorScale = d3.scale.linear()
         .domain(linspace(0, countMax, colors.length))
@@ -181,16 +187,18 @@ function heatmap () {
       }
 
       function drawCanvas(minExtent, maxExtent) {
-          ctx.clearRect(0, 0, width, height);
-          sources.forEach(function(source) {
-            source.data.forEach(function(d) {
-              if(d.count >= minExtent && d.count <= maxExtent) {
-                let start = xScale(d.time);
-                ctx.fillStyle = colorScale(d.count);
-                ctx.fillRect(start, yScale(source.name), xScale(d.time-interval) - start, yScale.rangeBand());
-              }
-            });
-          });
+        ctx.clearRect(0, 0, width, height);
+        let previousValue = null;
+        data.forEach(function(d) {
+          if(d.count >= minExtent && d.count <= maxExtent) {
+            let start = xScale(d.time);
+            if(previousValue != d.count) {
+              ctx.fillStyle = colorScale(d.count);
+              previousValue = d.count;
+            }
+            ctx.fillRect(start, yScale(d.name), xScale(d.time-interval) - start, yScale.rangeBand());
+          }
+        });
       }
 
       function draw() {
@@ -199,9 +207,9 @@ function heatmap () {
           .attr("class", "heatmap-canvas")
           .attr("width", width)
           .attr("height", height)
-          .style("position", "relative")
+          .style("position", "absolute")
           .style("left", margin.left + "px")
-          .style("bottom", height + margin.top + margin.bottom + legendHeight + legendMargin.top + legendMargin.bottom + 10 + "px");
+          .style("top", "0px");
         ctx = canvas.node().getContext("2d");
         drawCanvas(0, countMax);
       }

@@ -1,6 +1,7 @@
 define(function(require) {
 
   require('plugins/timeline_heatmap/timeline_heatmap_controller');
+  require('plugins/timeline_heatmap/timeline_heatmap.less');
 
   function TimelineHeatmapProvider(Private) {
     var TemplateVisType = Private(require("ui/template_vis_type/TemplateVisType"));
