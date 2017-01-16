@@ -38,7 +38,7 @@ define(function(require) {
           required: true,
           min: 1,
           max: 1,
-          aggFilter: ['terms']
+          aggFilter: ['terms', 'histogram']
         },
         {
           group: 'buckets',
