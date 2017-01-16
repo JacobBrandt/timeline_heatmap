@@ -1,8 +1,7 @@
 var module = require('ui/modules').get('timeline_heatmap', ['kibana']);
 var d3 = require('d3');
 var heatmap = require('plugins/timeline_heatmap/d3_timeline_heatmap');
-
-import 'ui/timefilter';
+var moment = require('moment');
 
 module.controller('TimelineHeatmapController', function($scope, $timeout, Private) {
   $scope.$watchMulti(['esResponse'], function ([resp]) {
@@ -17,8 +16,6 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, Privat
 
   $scope.processAggregations = function (aggregations) {
     let sourceData = [];
-    let minTime = 1e99;
-    let maxTime = 0;
 
     if (aggregations &&
       ($scope.vis.aggs.bySchemaName.metric !== undefined) &&
@@ -36,8 +33,6 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, Privat
           let timeValues = [];
           let bucketsForViewByValue = bucket[timeAggId].buckets;
           _.each(bucketsForViewByValue, function (valueBucket) {
-            minTime = Math.min(minTime, valueBucket.key);
-            maxTime = Math.max(maxTime, valueBucket.key);
             let value = null;
             if("std_dev" === metricsAgg.__type.name) {
               value = valueBucket[metricsAgg.id].std_deviation;
@@ -54,8 +49,6 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, Privat
         var timeValues = [];
         let buckets = aggregations[timeAggId].buckets;
         _.each(buckets, function (bucket) {
-          minTime = Math.min(minTime, bucket.key);
-          maxTime = Math.max(maxTime, bucket.key);
           timeValues.push({time: bucket.key, count: metricsAgg.getValue(bucket)});
         });
 
@@ -67,8 +60,6 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, Privat
     }
 
     $scope.sourceData = sourceData;
-    $scope.min = parseInt(minTime);
-    $scope.max = parseInt(maxTime);
   };
 })
 .directive('timeline', function($timeout, timefilter) {
@@ -80,15 +71,28 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, Privat
         }
       });
 
+      function applyTimeFilter(minExtent, maxExtent) {
+        timefilter.time.from = moment(minExtent);
+        timefilter.time.to = moment(maxExtent);
+        timefilter.time.mode = 'absolute';
+      }
+
       function renderChart() {
         let timeAgg = scope.vis.aggs.bySchemaName.timeSplit[0];
         var aggInterval = timeAgg.buckets.getInterval();
-        var interval = aggInterval._milliseconds;
+        var interval = aggInterval.asMilliseconds();
+
+        let bounds = timefilter.getActiveBounds();
+        let min = moment(bounds).startOf()
+        let earliest = moment(bounds.min).startOf(aggInterval.description).valueOf();
+        let latest = moment(bounds.max).valueOf();
+
         heatmap.heatmap().call(elem[0], scope.sourceData, {
-            min: scope.min,
-            max: scope.max,
+            min: earliest,
+            max: latest,
             interval: interval,
-            height: scope.vis.params.height
+            height: scope.vis.params.height,
+            onTimeChange: applyTimeFilter
           }
         );
       }
