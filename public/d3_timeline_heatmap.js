@@ -190,7 +190,7 @@ function heatmap () {
         ctx.clearRect(0, 0, width, height);
         let previousValue = null;
         data.forEach(function(d) {
-          if(d.count >= minExtent && d.count <= maxExtent) {
+          if(d.count !== null && d.count >= minExtent && d.count <= maxExtent) {
             let start = xScale(d.time);
             if(previousValue != d.count) {
               ctx.fillStyle = colorScale(d.count);

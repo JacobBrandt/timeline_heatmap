@@ -27,7 +27,7 @@ define(function(require) {
           required: true,
           min: 1,
           max: 1,
-          aggFilter: ['count', 'avg', 'sum', 'min', 'max', 'cardinality']
+          aggFilter: ['count', 'avg', 'sum', 'min', 'max', 'cardinality', 'std_dev']
         },
         {
           group: 'buckets',

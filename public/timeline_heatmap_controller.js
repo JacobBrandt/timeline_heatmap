@@ -38,7 +38,14 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, Privat
           _.each(bucketsForViewByValue, function (valueBucket) {
             minTime = Math.min(minTime, valueBucket.key);
             maxTime = Math.max(maxTime, valueBucket.key);
-            timeValues.push({time: valueBucket.key, count: metricsAgg.getValue(valueBucket)});
+            let value = null;
+            if("std_dev" === metricsAgg.__type.name) {
+              value = valueBucket[metricsAgg.id].std_deviation;
+            }
+            else {
+              value = metricsAgg.getValue(valueBucket);
+            }
+            timeValues.push({time: valueBucket.key, count: value});
           });
           sourceObj.data = timeValues;
           sourceData.push(sourceObj);
@@ -62,7 +69,6 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, Privat
     $scope.sourceData = sourceData;
     $scope.min = parseInt(minTime);
     $scope.max = parseInt(maxTime);
-    console.log($scope);
   };
 })
 .directive('timeline', function($timeout, timefilter) {
