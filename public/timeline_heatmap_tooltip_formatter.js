@@ -2,6 +2,7 @@ define(function (require) {
   return function TimelineHeatmapTooltipFormatter($compile, $rootScope, Private) {
     let $ = require('jquery');
     let _ = require('lodash');
+    let moment = require('moment');
 
     let $tooltipScope = $rootScope.$new();
     let $el = $('<div>').html(require('plugins/timeline_heatmap/timeline_heatmap_tooltip.html'));
@@ -12,6 +13,7 @@ define(function (require) {
 
       let viewByAgg = scope.vis.aggs.bySchemaName.viewBy[0];
       let metricsAgg = scope.vis.aggs.bySchemaName.metric[0];
+      let timeAgg = scope.vis.aggs.bySchemaName.timeSplit[0];
       let lane = feature.lane;
       if (viewByAgg.__type.name == "histogram") {
         lane = lane + " to " + (parseInt(feature.lane) + viewByAgg.params.interval);
@@ -25,6 +27,10 @@ define(function (require) {
         {
           label: metricsAgg.makeLabel(),
           value: feature.tip 
+        },
+        {
+          label: timeAgg.makeLabel(),
+          value: moment(feature.time)
         }
       ];
 
