@@ -283,7 +283,8 @@ function heatmap () {
                 width: Math.abs(xScale(d.time-interval) - start),
                 height: yScale.rangeBand(),
                 tip: d.count,
-                lane: d.name
+                lane: d.name,
+                time: d.time
               });
             }
           }
