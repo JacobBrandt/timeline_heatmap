@@ -17,6 +17,8 @@ define(function(require) {
         editor: require('plugins/timeline_heatmap/timeline_heatmap_vis_params.html'),
         defaults: {
           height: 20,
+          showTooltip: true,
+          showLegend: true
         }
       },
       schemas: new Schemas([

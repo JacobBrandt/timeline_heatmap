@@ -4,6 +4,8 @@ var heatmap = require('plugins/timeline_heatmap/d3_timeline_heatmap');
 var moment = require('moment');
 
 module.controller('TimelineHeatmapController', function($scope, $timeout, Private) {
+  $scope.tooltipFormatter = Private(require('plugins/timeline_heatmap/timeline_heatmap_tooltip_formatter'));
+
   $scope.$watchMulti(['esResponse'], function ([resp]) {
     if (resp === undefined) {
       return;
@@ -77,8 +79,14 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, Privat
         timefilter.time.mode = 'absolute';
       }
 
+      function formatTooltip(feature) {
+        return scope.tooltipFormatter(feature, scope);
+      }
+
       function renderChart() {
         let timeAgg = scope.vis.aggs.bySchemaName.timeSplit[0];
+        let viewByAgg = scope.vis.aggs.bySchemaName.viewBy[0];
+        let metricsAgg = scope.vis.aggs.bySchemaName.metric[0];
         var aggInterval = timeAgg.buckets.getInterval();
         var interval = aggInterval.asMilliseconds();
 
@@ -92,7 +100,10 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, Privat
             max: latest,
             interval: interval,
             height: scope.vis.params.height,
-            onTimeChange: applyTimeFilter
+            onTimeChange: applyTimeFilter,
+            formatTooltip: formatTooltip,
+            showTooltip: scope.vis.params.showTooltip,
+            showLegend: scope.vis.params.showLegend
           }
         );
       }
