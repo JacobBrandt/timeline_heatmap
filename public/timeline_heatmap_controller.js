@@ -3,8 +3,20 @@ var d3 = require('d3');
 var heatmap = require('plugins/timeline_heatmap/d3_timeline_heatmap');
 var moment = require('moment');
 
-module.controller('TimelineHeatmapController', function($scope, $timeout, Private) {
+module.controller('TimelineHeatmapController', function($scope, $timeout, $element, Private) {
   $scope.tooltipFormatter = Private(require('plugins/timeline_heatmap/timeline_heatmap_tooltip_formatter'));
+  const ResizeChecker = Private(require('ui/vislib/lib/resize_checker'));
+  const Binder = require('ui/Binder');
+
+  const resizeChecker = new ResizeChecker($element);
+  const binder = new Binder();
+  binder.on(resizeChecker, 'resize', function() {
+    resize();
+  });
+
+  function resize() {
+    $scope.$emit('render');
+  }
 
   $scope.$watchMulti(['esResponse'], function ([resp]) {
     if (resp === undefined) {
@@ -99,7 +111,6 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, Privat
             min: earliest,
             max: latest,
             interval: interval,
-            height: scope.vis.params.height,
             onTimeChange: applyTimeFilter,
             formatTooltip: formatTooltip,
             showTooltip: scope.vis.params.showTooltip,

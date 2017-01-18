@@ -10,20 +10,20 @@ function heatmap () {
       var interval = settings.interval;
       var min = parseInt(settings.min);
       var max = parseInt(settings.max) + interval;
-      var sourceHeight = settings.height;
       var onTimeChange = settings.onTimeChange;
       var formatTooltip = settings.formatTooltip;
       var showTooltip = settings.showTooltip;
       var showLegend = settings.showLegend;
 
       var selection = d3.select(this);
+      var visualizeEl = this.parentNode.parentNode;
 
       var sources = data;
 
       // Graph dimensions
-      var graphHeight = sourceHeight * sources.length;
+      var graphHeight = visualizeEl.clientHeight;
       var margin = {top: 0, right: 20, bottom: 30, left: 70},
-          width = 960 - margin.left - margin.right,
+          width = visualizeEl.clientWidth - margin.left - margin.right,
           height = graphHeight - margin.top - margin.bottom;
 
       var xScale, yScale;
@@ -33,8 +33,11 @@ function heatmap () {
       var sourceNames = [];
       var legend;
       var legendScale;
-      var legendHeight;
-      var legendMargin;
+      var legendHeight = 32;
+      var legendMargin = {top: 0, right: 20, bottom: 50, left: margin.left};
+      if(showLegend) {
+        height -= (legendHeight + legendMargin.top + legendMargin.bottom);
+      }
       var legendBrush;
       var ctx, canvasTooltips, tooltip;
 
@@ -89,8 +92,6 @@ function heatmap () {
         if(!showLegend) {
           return;
         }
-        legendHeight = 32;
-        legendMargin = {top: 0, right: 20, bottom: 50, left: margin.left};
         legend = selection.append("svg")
           .attr("class", "heatmap-legend")
           .attr("width", width + legendMargin.left + legendMargin.right)
