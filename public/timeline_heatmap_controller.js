@@ -1,13 +1,13 @@
-var module = require('ui/modules').get('timeline_heatmap', ['kibana']);
-var d3 = require('d3');
-var heatmap = require('plugins/timeline_heatmap/d3_timeline_heatmap');
-var moment = require('moment');
+import uiModules from 'ui/modules';
+import d3 from 'd3';
+import heatmap from 'plugins/timeline_heatmap/d3_timeline_heatmap.js';
+import moment from 'moment';
+import Binder from 'ui/binder';
 
+const module = uiModules.get('timeline_heatmap', ['kibana']);
 module.controller('TimelineHeatmapController', function($scope, $timeout, $element, Private) {
   $scope.tooltipFormatter = Private(require('plugins/timeline_heatmap/timeline_heatmap_tooltip_formatter'));
   const ResizeChecker = Private(require('ui/vislib/lib/resize_checker'));
-  const Binder = require('ui/Binder');
-
   const resizeChecker = new ResizeChecker($element);
   const binder = new Binder();
   binder.on(resizeChecker, 'resize', function() {
@@ -28,24 +28,26 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
     $scope.$emit('render');
   });
 
+  $scope.$watch('vis.params', (options) => $scope.$emit('render'));
+
   $scope.processAggregations = function (aggregations) {
-    let sourceData = [];
+    const sourceData = [];
 
     if (aggregations &&
       ($scope.vis.aggs.bySchemaName.metric !== undefined) &&
       ($scope.vis.aggs.bySchemaName.timeSplit !== undefined)) {
-      let metricsAgg = $scope.vis.aggs.bySchemaName.metric[0];
-      let timeAgg = $scope.vis.aggs.bySchemaName.timeSplit[0];
-      let timeAggId = timeAgg.id;
+      const metricsAgg = $scope.vis.aggs.bySchemaName.metric[0];
+      const timeAgg = $scope.vis.aggs.bySchemaName.timeSplit[0];
+      const timeAggId = timeAgg.id;
 
       if ($scope.vis.aggs.bySchemaName.viewBy !== undefined) {
-        let viewByAgg = $scope.vis.aggs.bySchemaName.viewBy[0];
-        let viewByBuckets = aggregations[viewByAgg.id].buckets;
+        const viewByAgg = $scope.vis.aggs.bySchemaName.viewBy[0];
+        const viewByBuckets = aggregations[viewByAgg.id].buckets;
         _.each(viewByBuckets, function (bucket) {
-          let sourceObj = {};
+          const sourceObj = {};
           sourceObj.name = bucket.key;
           let timeValues = [];
-          let bucketsForViewByValue = bucket[timeAggId].buckets;
+          const bucketsForViewByValue = bucket[timeAggId].buckets;
           _.each(bucketsForViewByValue, function (valueBucket) {
             let value = null;
             if("std_dev" === metricsAgg.__type.name) {
@@ -60,8 +62,8 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
           sourceData.push(sourceObj);
         });
       } else {
-        var timeValues = [];
-        let buckets = aggregations[timeAggId].buckets;
+        let timeValues = [];
+        const buckets = aggregations[timeAggId].buckets;
         _.each(buckets, function (bucket) {
           timeValues.push({time: bucket.key, count: metricsAgg.getValue(bucket)});
         });
@@ -96,16 +98,15 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
       }
 
       function renderChart() {
-        let timeAgg = scope.vis.aggs.bySchemaName.timeSplit[0];
-        let viewByAgg = scope.vis.aggs.bySchemaName.viewBy[0];
-        let metricsAgg = scope.vis.aggs.bySchemaName.metric[0];
-        var aggInterval = timeAgg.buckets.getInterval();
-        var interval = aggInterval.asMilliseconds();
-
-        let bounds = timefilter.getActiveBounds();
-        let min = moment(bounds).startOf()
-        let earliest = moment(bounds.min).startOf(aggInterval.description).valueOf();
-        let latest = moment(bounds.max).valueOf();
+        const timeAgg = scope.vis.aggs.bySchemaName.timeSplit[0];
+        const viewByAgg = scope.vis.aggs.bySchemaName.viewBy[0];
+        const metricsAgg = scope.vis.aggs.bySchemaName.metric[0];
+        const aggInterval = timeAgg.buckets.getInterval();
+        const interval = aggInterval.asMilliseconds();
+        const bounds = timefilter.getActiveBounds();
+        const min = moment(bounds).startOf()
+        const earliest = moment(bounds.min).startOf(aggInterval.description).valueOf();
+        const latest = moment(bounds.max).valueOf();
 
         heatmap.heatmap().call(elem[0], scope.sourceData, {
             min: earliest,
