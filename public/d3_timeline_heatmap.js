@@ -166,7 +166,12 @@ function heatmap(element, data, settings) {
       .html("")
       .append('tspan').text(function(d) {
         return d;
-      }).each(truncateText);
+      })
+      // .attr("full-text", function(d) {return d})
+      .each(truncateText)
+      .append('title').text(function(d) {
+        return d;
+      });
   }
 
   function createTimeBrush() {
