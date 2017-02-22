@@ -24,7 +24,7 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
     }
 
     $scope.processAggregations(resp.aggregations);
-
+    
     $scope.$emit('render');
   });
 
@@ -82,7 +82,7 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
   return {
     link: function(scope, elem, attr) {
       scope.$on('render',function (event, d) {
-        if (scope.vis.aggs.length !== 0 && scope.vis.aggs.bySchemaName.timeSplit !== undefined) {
+        if (scope.sourceData !== undefined && scope.vis.aggs.length !== 0 && scope.vis.aggs.bySchemaName.timeSplit !== undefined) {
           renderChart();
         }
       });
@@ -108,7 +108,7 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
         const earliest = moment(bounds.min).startOf(aggInterval.description).valueOf();
         const latest = moment(bounds.max).valueOf();
 
-        heatmap.heatmap().call(elem[0], scope.sourceData, {
+        heatmap(elem[0], scope.sourceData, {
             min: earliest,
             max: latest,
             interval: interval,
