@@ -19,8 +19,10 @@ visTypes.register(function TimelineHeatmapProvider(Private) {
       editor: require('plugins/timeline_heatmap/timeline_heatmap_vis_params.html'),
       defaults: {
         showTooltip: true,
-        showLegend: true
-      }
+        showLegend: true,
+        colorType: 'Spectral'
+      },
+      colorTypes: ['Spectral', 'Orange', 'Purple']
     },
     schemas: new Schemas([
       {

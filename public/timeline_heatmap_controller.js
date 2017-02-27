@@ -115,7 +115,8 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
             onTimeChange: applyTimeFilter,
             formatTooltip: formatTooltip,
             showTooltip: scope.vis.params.showTooltip,
-            showLegend: scope.vis.params.showLegend
+            showLegend: scope.vis.params.showLegend,
+            colorType: scope.vis.params.colorType
           }
         );
       }
