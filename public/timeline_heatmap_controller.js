@@ -80,7 +80,7 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
   return {
     link: function(scope, elem, attr) {
       scope.$on('render',function (event, d) {
-        if (scope.vis.aggs.length !== 0 && scope.vis.aggs.bySchemaName.timeSplit !== undefined) {
+        if (scope.sourceData !== undefined && scope.vis.aggs.length !== 0 && scope.vis.aggs.bySchemaName.timeSplit !== undefined) {
           renderChart();
         }
       });
