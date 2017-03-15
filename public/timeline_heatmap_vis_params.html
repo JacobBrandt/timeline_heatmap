@@ -10,3 +10,14 @@
       Show Tooltip
   </label>
 </div>
+
+<div class="form-group">
+  <label>Color type</label>
+    <select name="colorType"
+    class="form-control"
+    ng-model="vis.params.colorType"
+    ng-init="vis.params.colorType || vis.type.params.colorTypes[0]"
+    ng-options="colorType as colorType for colorType in vis.type.params.colorTypes"
+    >
+  </select>
+</div>
