@@ -13,8 +13,8 @@ function heatmap(element, data, settings) {
   var sources = data;
 
   // Graph dimensions
-  var graphHeight = visualizeEl.clientHeight;
-  var margin = {top: 0, right: 20, bottom: 30, left: 70},
+  var graphHeight = visualizeEl.clientHeight - 20;
+  var margin = {top: 10, right: 20, bottom: 30, left: 70},
   width = visualizeEl.clientWidth - margin.left - margin.right,
   height = graphHeight - margin.top - margin.bottom;
 
@@ -26,7 +26,7 @@ function heatmap(element, data, settings) {
   var legend;
   var legendScale;
   var legendHeight = 16;
-  var legendMargin = {top: 0, right: 20, bottom: 50, left: margin.left};
+  var legendMargin = {top: 0, right: 20, bottom: 20, left: margin.left};
   if(showLegend) {
     height -= (legendHeight + legendMargin.top + legendMargin.bottom);
   }
@@ -317,7 +317,7 @@ function heatmap(element, data, settings) {
       .style("position", "absolute")
       .style("z-index", "-1")
       .style("left", margin.left + "px")
-      .style("top", "0px");
+      .style("top", margin.top + "px");
     ctx = canvas.node().getContext("2d");
     drawCanvas(0, countMax);
   }
