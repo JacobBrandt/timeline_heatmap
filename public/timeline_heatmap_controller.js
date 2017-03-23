@@ -78,7 +78,7 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
     $scope.sourceData = sourceData;
   };
 })
-.directive('timeline', function($timeout, timefilter) {
+.directive('timeline', function(config, $timeout, timefilter) {
   return {
     link: function(scope, elem, attr) {
       scope.$on('render',function (event, d) {
@@ -108,6 +108,24 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
         const earliest = moment(bounds.min).startOf(aggInterval.description).valueOf();
         const latest = moment(bounds.max).valueOf();
 
+        function getScaledInterval() {
+          let interval = aggInterval;
+          let rules = config.get('dateFormat:scaled');
+
+          for (let i = rules.length - 1; i >= 0; i--) {
+            let rule = rules[i];
+            if (!rule[0] || interval >= moment.duration(rule[0])) {
+              return rule[1];
+            }
+          }
+
+          return config.get('dateFormat');
+        }
+
+        function xAxisFormatter(val) {
+          return moment(val).format(getScaledInterval());
+        }
+
         heatmap(elem[0], scope.sourceData, {
             min: earliest,
             max: latest,
@@ -116,7 +134,8 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
             formatTooltip: formatTooltip,
             showTooltip: scope.vis.params.showTooltip,
             showLegend: scope.vis.params.showLegend,
-            colorType: scope.vis.params.colorType
+            colorType: scope.vis.params.colorType,
+            xAxisFormatter: xAxisFormatter
           }
         );
       }

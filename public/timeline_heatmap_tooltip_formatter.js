@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import _ from 'lodash';
 import moment from 'moment';
-export default function TimelineHeatmapTooltipFormatter($compile, $rootScope, Private) {
+export default function TimelineHeatmapTooltipFormatter(config, $compile, $rootScope, Private) {
   let $tooltipScope = $rootScope.$new();
   let $el = $('<div>').html(require('plugins/timeline_heatmap/timeline_heatmap_tooltip.html'));
   $compile($el)($tooltipScope);
@@ -28,7 +28,7 @@ export default function TimelineHeatmapTooltipFormatter($compile, $rootScope, Pr
       },
       {
         label: timeAgg.makeLabel(),
-        value: moment(feature.time)
+        value: moment(feature.time).format(config.get("dateFormat"))
       }
     ];
 

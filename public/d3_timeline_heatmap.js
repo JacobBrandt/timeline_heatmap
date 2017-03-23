@@ -6,6 +6,7 @@ function heatmap(element, data, settings) {
   var formatTooltip = settings.formatTooltip;
   var showTooltip = settings.showTooltip;
   var showLegend = settings.showLegend;
+  var xAxisFormatter = settings.xAxisFormatter;
 
   var selection = d3.select(element);
   var visualizeEl = element.parentNode.parentNode;
@@ -73,6 +74,7 @@ function heatmap(element, data, settings) {
     xAxis = d3.svg.axis()
       .scale(xScale)
       .orient("bottom")
+      .tickFormat(xAxisFormatter)
       .tickSize(5);
     yAxis = d3.svg.axis()
       .scale(yScale)
