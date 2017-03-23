@@ -1,5 +1,5 @@
 define(function (require) {
-  return function TimelineHeatmapTooltipFormatter($compile, $rootScope, Private) {
+  return function TimelineHeatmapTooltipFormatter(config, $compile, $rootScope, Private) {
     let $ = require('jquery');
     let _ = require('lodash');
     let moment = require('moment');
@@ -30,7 +30,7 @@ define(function (require) {
         },
         {
           label: timeAgg.makeLabel(),
-          value: moment(feature.time)
+          value: moment(feature.time).format(config.get("dateFormat"))
         }
       ];
 
