@@ -135,7 +135,8 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
             showTooltip: scope.vis.params.showTooltip,
             showLegend: scope.vis.params.showLegend,
             colorType: scope.vis.params.colorType,
-            xAxisFormatter: xAxisFormatter
+            xAxisFormatter: xAxisFormatter,
+            rangeBandPct: scope.vis.params.rangeBandPct
           }
         );
       }

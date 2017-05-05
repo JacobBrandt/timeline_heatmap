@@ -20,7 +20,8 @@ visTypes.register(function TimelineHeatmapProvider(Private) {
       defaults: {
         showTooltip: true,
         showLegend: true,
-        colorType: 'Spectral'
+        colorType: 'Spectral',
+        rangeBandPct: 80
       },
       colorTypes: ['Spectral', 'Orange', 'Purple']
     },

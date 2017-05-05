@@ -7,6 +7,7 @@ function heatmap(element, data, settings) {
   var showTooltip = settings.showTooltip;
   var showLegend = settings.showLegend;
       var xAxisFormatter = settings.xAxisFormatter;
+  var rangeBandPct = settings.rangeBandPct;
 
   var selection = d3.select(element);
   var visualizeEl = element.parentNode.parentNode;
@@ -68,7 +69,7 @@ function heatmap(element, data, settings) {
 
     yScale = d3.scale.ordinal()
       .domain(sourceNames)
-      .rangeBands([0, height], .2);
+      .rangeBands([0, height], (100-rangeBandPct)/100);
   }
 
   function createAxis() {
