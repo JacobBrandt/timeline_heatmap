@@ -4,6 +4,7 @@ import TemplateVisTypeTemplateVisTypeProvider from 'ui/template_vis_type/templat
 import VisSchemasProvider from 'ui/vis/schemas';
 import timelineHeatmapTemplate from 'plugins/timeline_heatmap/timeline_heatmap_controller.html';
 import visTypes from 'ui/registry/vis_types';
+import AggResponsePointSeriesPointSeriesProvider from 'ui/agg_response/point_series/point_series';
 
 visTypes.register(function TimelineHeatmapProvider(Private) {
   const TemplateVisType = Private(TemplateVisTypeTemplateVisTypeProvider);
@@ -20,10 +21,12 @@ visTypes.register(function TimelineHeatmapProvider(Private) {
       defaults: {
         showTooltip: true,
         showLegend: true,
+        showCrosshair: true,
         colorType: 'Spectral',
-        rangeBandPct: 80
+        axisColorType: 'Spectral',
+        rangeBandPct: 100
       },
-      colorTypes: ['Spectral', 'Orange', 'Purple']
+      colorTypes: ['Spectral', 'Orange', 'Purple', 'Pink']
     },
     schemas: new Schemas([
       {

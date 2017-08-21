@@ -3,12 +3,15 @@ import d3 from 'd3';
 import heatmap from 'plugins/timeline_heatmap/d3_timeline_heatmap.js';
 import moment from 'moment';
 import Binder from 'ui/binder';
+import VislibVisTypeBuildChartDataProvider from 'ui/vislib_vis_type/build_chart_data';
+import AggResponseTabifyProvider from 'ui/agg_response/tabify/tabify';
 
 const module = uiModules.get('timeline_heatmap', ['kibana']);
 module.controller('TimelineHeatmapController', function($scope, $timeout, $element, Private) {
   $scope.tooltipFormatter = Private(require('plugins/timeline_heatmap/timeline_heatmap_tooltip_formatter'));
   const ResizeChecker = Private(require('ui/vislib/lib/resize_checker'));
   const resizeChecker = new ResizeChecker($element);
+  const queryFilter = Private(require('ui/filter_bar/query_filter'));
   const binder = new Binder();
   binder.on(resizeChecker, 'resize', function() {
     resize();
@@ -17,6 +20,8 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
   function resize() {
     $scope.$emit('render');
   }
+
+  $scope.queryFilter = queryFilter;
 
   $scope.$watchMulti(['esResponse'], function ([resp]) {
     if (resp === undefined) {
@@ -93,6 +98,85 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
         timefilter.time.mode = 'absolute';
       }
 
+      function applySourceFilter(sources) {
+        let viewByAgg = scope.vis.aggs.bySchemaName.viewBy[0];
+        let newFilter = {
+          meta: {
+            index: scope.vis.indexPattern.id,
+          },
+        };
+
+        let sourceType = scope.vis.aggs.bySchemaName.viewBy[0].params.field.type;
+        let found = false;
+        let min = 0;
+        let max = 0;
+        let key = viewByAgg.params.field.name;
+        let existingFilter = null;
+        _.flatten([scope.queryFilter.getAppFilters(), scope.queryFilter.getGlobalFilters()]).forEach(function (it) {
+          if (it.meta.disabled || it.meta.negate) {
+            return;
+          }
+          if (it.meta.alias && it.meta.alias.includes("Heatmap Terms")) {
+            found = true;
+            existingFilter = it;
+          }
+          if (it.meta.key === key) {
+            var filterMin = -1;
+            var filterMax = -1;
+            if ('gte' in it.range[key]) filterMin = it.range[key].gte;
+            if ('gt' in it.range[key]) filterMin = it.range[key].gt;
+            if ('lte' in it.range[key]) filterMax = it.range[key].lte;
+            if ('lt' in it.range[key]) filterMax = it.range[key].lt;
+            if (filterMin !== -1 && filterMax !== -1) {
+              if (!found || filterMin < min) min = filterMin;
+              if (!found || filterMax > max) max = filterMax;
+              found = true;
+              existingFilter = it;
+            }
+          }
+        });
+        let updateModel = null
+        let alias = null;
+        if (sourceType === "number") {
+          let minExtent = sources[0];
+          let maxExtent = sources[sources.length - 1];
+          newFilter.range = { };
+          newFilter.range[viewByAgg.params.field.name] = {
+            gte: minExtent,
+            lte: maxExtent
+          };
+          updateModel = {
+            range: newFilter.range
+          };
+        }
+        else {
+          sources.forEach(function (source, index, data) {
+            data[index] = '\"' + source + '\"';
+          });
+          newFilter.query = {
+            query_string: {
+              default_field: viewByAgg.params.field.name,
+              query: sources.join(" OR " ),
+            }
+          };
+          updateModel = {
+            query: newFilter.query
+          };
+          alias = "Heatmap Terms: (" + sources.length + " selected)";
+        }
+        if (found) {
+          scope.queryFilter.updateFilter({
+            model: updateModel,
+            source: existingFilter,
+            alias: alias
+          })
+        }
+        else {
+          newFilter.meta["alias"] = alias;
+          scope.queryFilter.addFilters(newFilter);
+        }
+      }
+
       function formatTooltip(feature) {
         return scope.tooltipFormatter(feature, scope);
       }
@@ -131,12 +215,17 @@ module.controller('TimelineHeatmapController', function($scope, $timeout, $eleme
             max: latest,
             interval: interval,
             onTimeChange: applyTimeFilter,
+            onSourceChange: applySourceFilter,
             formatTooltip: formatTooltip,
             showTooltip: scope.vis.params.showTooltip,
             showLegend: scope.vis.params.showLegend,
             colorType: scope.vis.params.colorType,
+            axisColorType: scope.vis.params.axisColorType,
             xAxisFormatter: xAxisFormatter,
-            rangeBandPct: scope.vis.params.rangeBandPct
+            rangeBandPct: scope.vis.params.rangeBandPct,
+            sourceType: scope.vis.aggs.bySchemaName.viewBy[0].params.field.type,
+            type: "overall",
+            showCrosshair: scope.vis.params.showCrosshair
           }
         );
       }

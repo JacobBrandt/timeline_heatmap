@@ -10,6 +10,12 @@
       Show Tooltip
   </label>
 </div>
+<div class="vis-option-item">
+  <label>
+    <input type="checkbox" ng-model="vis.params.showCrosshair">
+      Show Crosshair
+  </label>
+</div>
 
 <div class="form-group">
   <label>Color type</label>
@@ -18,6 +24,17 @@
     ng-model="vis.params.colorType"
     ng-init="vis.params.colorType || vis.type.params.colorTypes[0]"
     ng-options="colorType as colorType for colorType in vis.type.params.colorTypes"
+    >
+  </select>
+</div>
+
+<div class="form-group">
+  <label>Axis Color type</label>
+    <select name="axisColorType"
+    class="form-control"
+    ng-model="vis.params.axisColorType"
+    ng-init="vis.params.axisColorType || vis.type.params.colorTypes[3]"
+    ng-options="axisColorType as axisColorType for axisColorType in vis.type.params.colorTypes"
     >
   </select>
 </div>
