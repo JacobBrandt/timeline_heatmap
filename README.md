@@ -4,9 +4,6 @@
 * [Kibana 4](https://github.com/JacobBrandt/timeline_heatmap/tree/4.6)
 * [Kibana 5](https://github.com/JacobBrandt/timeline_heatmap/tree/5.1)
 
-## timeline_heatmap
-Kibana visualization that renders multiple sources over time.
-
 ![new_features](https://user-images.githubusercontent.com/5314322/29205728-d4a6b6bc-7e3b-11e7-8464-7d65a95be1ef.png)
 
 # New Features!
