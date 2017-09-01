@@ -1,4 +1,6 @@
-# Plugin Visualization Versions
+# Timeline Heatmap
+
+## Plugin Visualization Versions
 * [Kibana 4](https://github.com/JacobBrandt/timeline_heatmap/tree/4.6)
 * [Kibana 5](https://github.com/JacobBrandt/timeline_heatmap/tree/5.1)
 
